@@ -1,0 +1,8 @@
+{
+  "name": "ElectraPE - HTML to Windows EXE & PE Header Studio",
+  "description": "Convert web apps & HTML5 projects into native Windows desktop executables using Electron packaging and PE header customization.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
