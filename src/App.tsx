@@ -9,8 +9,9 @@ import { BuildPipeline } from './components/BuildPipeline';
 import { GeneratedCodeViewer } from './components/GeneratedCodeViewer';
 import { WindowsSimulator } from './components/WindowsSimulator';
 import { ExportModal } from './components/ExportModal';
+import { TemplateLibrary } from './components/TemplateLibrary';
 import { ElectronConfig, PeHeaderConfig, ProjectFiles } from './types/pe-types';
-import { STARTER_TEMPLATES } from './constants/templates';
+import { STARTER_TEMPLATES, TemplateDefinition } from './constants/templates';
 import { Cpu, Shield, Package, Play, Layers } from 'lucide-react';
 
 import { validatePeHeaderConfig } from './utils/pe-validator';
@@ -18,6 +19,8 @@ import { validatePeHeaderConfig } from './utils/pe-validator';
 export default function App() {
   const [activeTab, setActiveTab] = useState<ActiveTab>('editor');
   const [isExportModalOpen, setIsExportModalOpen] = useState<boolean>(false);
+  const [isTemplateLibraryOpen, setIsTemplateLibraryOpen] = useState<boolean>(false);
+  const [currentTemplateId, setCurrentTemplateId] = useState<string>('dashboard');
 
   // Initial Project Files (from Dashboard template)
   const [files, setFiles] = useState<ProjectFiles>(STARTER_TEMPLATES[0].files);
@@ -88,20 +91,29 @@ export default function App() {
     createStartMenuShortcut: true
   });
 
-  const handleSelectTemplate = (templateId: string) => {
-    const selected = STARTER_TEMPLATES.find((t) => t.id === templateId);
+  const handleSelectTemplate = (templateOrId: string | TemplateDefinition) => {
+    const selected = typeof templateOrId === 'string'
+      ? STARTER_TEMPLATES.find((t) => t.id === templateOrId)
+      : templateOrId;
+
     if (selected) {
+      setCurrentTemplateId(selected.id);
       setFiles(selected.files);
       setElectronConfig((prev) => ({
         ...prev,
         appName: selected.name,
-        description: selected.description
+        description: selected.description,
+        windowWidth: selected.recommendedWindow.width,
+        windowHeight: selected.recommendedWindow.height,
+        frame: selected.recommendedWindow.frame,
+        titleBarStyle: selected.recommendedWindow.titleBarStyle || 'default'
       }));
       setPeConfig((prev) => ({
         ...prev,
         productName: selected.name,
         fileDescription: selected.description,
-        originalFilename: `${selected.id}_app.exe`
+        originalFilename: `${selected.id}_app.exe`,
+        ...(selected.recommendedPe || {})
       }));
     }
   };
@@ -114,6 +126,7 @@ export default function App() {
         onTabChange={setActiveTab}
         onOpenExport={() => setIsExportModalOpen(true)}
         onQuickSimulate={() => setActiveTab('simulator')}
+        onOpenTemplates={() => setIsTemplateLibraryOpen(true)}
         validationErrorCount={validationReport.errorCount}
       />
 
@@ -180,6 +193,7 @@ export default function App() {
             files={files}
             onChangeFiles={setFiles}
             onSelectTemplate={handleSelectTemplate}
+            onOpenTemplateLibrary={() => setIsTemplateLibraryOpen(true)}
           />
         )}
 
@@ -227,6 +241,14 @@ export default function App() {
         electronConfig={electronConfig}
         peConfig={peConfig}
         files={files}
+      />
+
+      {/* Starter Template Library Modal */}
+      <TemplateLibrary
+        isOpen={isTemplateLibraryOpen}
+        onClose={() => setIsTemplateLibraryOpen(false)}
+        onSelectTemplate={handleSelectTemplate}
+        currentTemplateId={currentTemplateId}
       />
     </div>
   );

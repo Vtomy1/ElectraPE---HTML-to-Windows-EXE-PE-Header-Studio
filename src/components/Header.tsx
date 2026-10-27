@@ -1,5 +1,5 @@
 import React from 'react';
-import { Package, Download, Play, Shield, Cpu, Code2, MonitorPlay } from 'lucide-react';
+import { Package, Download, Play, Shield, Cpu, Code2, MonitorPlay, LayoutTemplate } from 'lucide-react';
 
 export type ActiveTab = 'editor' | 'pe_header' | 'resources' | 'pe_hex' | 'electron_config' | 'pipeline' | 'generated_code' | 'simulator';
 
@@ -8,6 +8,7 @@ interface HeaderProps {
   onTabChange: (tab: ActiveTab) => void;
   onOpenExport: () => void;
   onQuickSimulate: () => void;
+  onOpenTemplates?: () => void;
   validationErrorCount?: number;
 }
 
@@ -16,6 +17,7 @@ export const Header: React.FC<HeaderProps> = ({
   onTabChange,
   onOpenExport,
   onQuickSimulate,
+  onOpenTemplates,
   validationErrorCount = 0
 }) => {
   return (
@@ -135,6 +137,17 @@ export const Header: React.FC<HeaderProps> = ({
 
       {/* Zone 3: Primary action button */}
       <div className="flex items-center gap-2.5 shrink-0">
+        {onOpenTemplates && (
+          <button
+            onClick={onOpenTemplates}
+            className="hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-neutral-700 bg-neutral-800 text-neutral-300 hover:text-white hover:bg-neutral-700 transition-colors whitespace-nowrap shrink-0"
+            title="Browse starter template library"
+          >
+            <LayoutTemplate className="w-3.5 h-3.5 text-blue-400" />
+            <span>Templates</span>
+          </button>
+        )}
+
         <button
           onClick={onQuickSimulate}
           className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-neutral-700 bg-neutral-800 text-neutral-300 hover:text-white hover:bg-neutral-700 transition-colors whitespace-nowrap shrink-0"

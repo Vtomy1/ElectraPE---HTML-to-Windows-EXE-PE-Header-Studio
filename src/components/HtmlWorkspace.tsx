@@ -1,12 +1,24 @@
 import React, { useState, useRef } from 'react';
 import { ProjectFiles } from '../types/pe-types';
 import { STARTER_TEMPLATES } from '../constants/templates';
-import { Code2, FileCode, Palette, Terminal, Upload, RefreshCw, Sparkles, Eye, Check } from 'lucide-react';
+import {
+  Code2,
+  FileCode,
+  Palette,
+  Terminal,
+  Upload,
+  RefreshCw,
+  Sparkles,
+  Eye,
+  Check,
+  LayoutTemplate
+} from 'lucide-react';
 
 interface HtmlWorkspaceProps {
   files: ProjectFiles;
   onChangeFiles: (newFiles: ProjectFiles) => void;
   onSelectTemplate: (templateId: string) => void;
+  onOpenTemplateLibrary?: () => void;
 }
 
 type FileTab = 'index.html' | 'styles.css' | 'app.js';
@@ -14,7 +26,8 @@ type FileTab = 'index.html' | 'styles.css' | 'app.js';
 export const HtmlWorkspace: React.FC<HtmlWorkspaceProps> = ({
   files,
   onChangeFiles,
-  onSelectTemplate
+  onSelectTemplate,
+  onOpenTemplateLibrary
 }) => {
   const [activeFile, setActiveFile] = useState<FileTab>('index.html');
   const [previewKey, setPreviewKey] = useState<number>(0);
@@ -138,7 +151,7 @@ if (window.electronAPI) {
           </div>
 
           {/* Quick template selector */}
-          <div className="hidden sm:flex items-center gap-1.5 ml-3 text-neutral-400">
+          <div className="hidden sm:flex items-center gap-2 ml-3 text-neutral-400">
             <span>Template:</span>
             <select
               onChange={(e) => onSelectTemplate(e.target.value)}
@@ -150,6 +163,16 @@ if (window.electronAPI) {
                 </option>
               ))}
             </select>
+            {onOpenTemplateLibrary && (
+              <button
+                onClick={onOpenTemplateLibrary}
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-neutral-800 hover:bg-neutral-700 text-neutral-200 hover:text-white transition-colors ml-1"
+                title="Open Categorized Template Library modal with live previews"
+              >
+                <LayoutTemplate className="w-3.5 h-3.5 text-blue-400" />
+                <span>Browse Library...</span>
+              </button>
+            )}
           </div>
         </div>
 
